@@ -1,9 +1,0 @@
-project: Data Handling Suite
-version: 1.0
-features:
-- serialization
-- deserialization
-- validation
-settings:
-  debug: true
-  max_connections: 5

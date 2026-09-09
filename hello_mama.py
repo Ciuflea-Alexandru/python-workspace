@@ -1,7 +1,8 @@
-def hello_mama():
+def hello_world():
     status = 'learning'
-    print('Hello Mama!')
+    print('Hello World!')
     print(f'I am {status} python!')
 
+
 if __name__ == "__main__":
-    hello_mama()
+    hello_world()
