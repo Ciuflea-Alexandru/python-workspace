@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-def setup_project_directories(categories: list[str], base_path: str ='.') -> None:
+def setup_project_directories(categories: list[str], base_path: str | Path = '.') -> None:
     """
         Ensures that 'logs' and 'data' directories exist inside each category folder.
 

@@ -1,9 +1,15 @@
 import logging
 from pathlib import Path
+from utils import setup_project_directories
 
-# 1. SETUP LOGGING
-logs_dir = Path('data_handling/logs')
-logs_dir.mkdir(parents=True, exist_ok=True)
+# 1. SETUP PROJECT DIRECTORIES VIA UTILS
+SCRIPT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR.parent
+
+setup_project_directories(['data_handling'], base_path=PROJECT_ROOT)
+
+# 2. SETUP LOGGING using absolute/resolved paths to avoid nesting
+logs_dir = SCRIPT_DIR / 'logs'
 log_file_path = logs_dir / 'pathlib_demo.log'
 
 logging.basicConfig(
@@ -20,11 +26,9 @@ logger = logging.getLogger('PathlibDemo')
 def demonstrate_pathlib():
     logger.info('Starting pathlib demonstration script...')
 
-    base_dir = Path('data')
-    data_dir = base_dir / 'data'
-    data_dir.mkdir(parents=True, exist_ok=True)
+    data_dir = SCRIPT_DIR / 'data'
 
-    logger.info(f'Current working dictionary: {Path.cwd()}')
+    logger.info(f'Current working directory: {Path.cwd()}')
     logger.info(f'Resolved data directory: {data_dir.resolve()}')
 
     sample_file = data_dir / 'sample_data.csv'
@@ -34,10 +38,10 @@ def demonstrate_pathlib():
     logger.info(f'Successfully created and wrote to file: {sample_file.name}')
 
     if sample_file.exists():
-        logger.info(f'File name(stem): {sample_file.stem}')
+        logger.info(f'File name (stem): {sample_file.stem}')
         logger.info(f'File extension: {sample_file.suffix}')
         logger.info(f'Parent directory: {sample_file.parent}')
-        logger.info(f'File size(bytes): {sample_file.stat().st_size}')
+        logger.info(f'File size (bytes): {sample_file.stat().st_size}')
 
     content = sample_file.read_text(encoding='utf-8')
     logger.info(f'Read content back from file:\n{content.strip()}')
