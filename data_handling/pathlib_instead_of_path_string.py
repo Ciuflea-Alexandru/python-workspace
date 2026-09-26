@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from utils import setup_project_directories
+from file_system import setup_project_directories
 
 # 1. SETUP PROJECT DIRECTORIES VIA UTILS
 SCRIPT_DIR = Path(__file__).resolve().parent
