@@ -1,26 +1,14 @@
-import logging
 from pathlib import Path
 from file_system import setup_project_directories
+from logger import log
 
-# 1. SETUP PROJECT DIRECTORIES VIA UTILS
+# Set up the filepath if they dont exist and the logger
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 
 setup_project_directories(['data_handling'], base_path=PROJECT_ROOT)
 
-# 2. SETUP LOGGING using absolute/resolved paths to avoid nesting
-logs_dir = SCRIPT_DIR / 'logs'
-log_file_path = logs_dir / 'pathlib_demo.log'
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[
-        logging.FileHandler(log_file_path),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger('PathlibDemo')
+logger = log()
 
 
 def demonstrate_pathlib():
