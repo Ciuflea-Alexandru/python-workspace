@@ -1,14 +1,13 @@
 from pathlib import Path
-from file_system import setup_project_directories
+from file_system import main_directories
 from logger import log
 
 # Set up the filepath if they dont exist and the logger
+main_directories(['data_handling'])
+logger = log()
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
-
-setup_project_directories(['data_handling'], base_path=PROJECT_ROOT)
-
-logger = log()
 
 
 def demonstrate_pathlib():

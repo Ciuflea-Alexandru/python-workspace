@@ -1,19 +1,26 @@
+import inspect
 from pathlib import Path
 
 
-def setup_project_directories(categories: list[str], base_path: str | Path = '.') -> None:
+def main_directories(categories: list[str], base_path: str | Path | None = None) -> None:
     """
-        Ensures that 'logs' and 'data' directories exist inside each category folder.
+    Ensures that 'logs' and 'data' directories exist inside each category folder.
 
-        Args:
-            categories (list[str]): List of category folder names.
-            base_path (str): The root directory where categories should be created.
-        """
-    base = Path(base_path)
+    Args:
+        categories (list[str]): List of category folder names.
+        base_path (str | Path | None): The root directory. If None, automatically
+                                       resolves to the directory of the script calling this function.
+    """
+    if base_path is None:
+        # Inspect the caller's stack frame to find the file path of the script that invoked this
+        caller_frame = inspect.currentframe().f_back
+        caller_file = inspect.getfile(caller_frame)
+        base = Path(caller_file).resolve().parent
+    else:
+        base = Path(base_path)
 
     for category in categories:
         cat_path = base / category
-
         subdirs = ['logs', 'data']
 
         for subdir in subdirs:
@@ -33,4 +40,5 @@ if __name__ == '__main__':
         'object_oriented'
     ]
 
-    setup_project_directories(project_categories)
+    # Now you can just call it cleanly without specifying any paths!
+    main_directories(project_categories)
