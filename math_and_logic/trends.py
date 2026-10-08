@@ -90,39 +90,52 @@ def group_swings(klines: list[Kline]) -> list[Swing]:
     return swings
 
 
-def trend(swings: list[Swing]):
-    #  Verifica starea trendului bazat pe 6 swinguri + un break point la al 7 lea
+class Trend:
+    def __init__(self, swings: list[Swing]):
+        self.swings = swings
 
-    if len(swings) < 7:
-        return 'Date insuficiente'
+    @staticmethod  # Am decis sa fac functia statica ca sa o pastrez in clasa trend
+    def get_main_kline(swing: Swing) -> float:
+        # Returneaza valoarea main klineului pentru un swing
+        idx = swing.main_kline_index()
+        return swing.klines[idx].close
 
-    # Extragem cele 6 swinguri de baza si al 7 lea (break pointul)
-    s1, s2, s3, s4, s5, s6, s7 = swings[0], swings[1], swings[2], swings[3], swings[4], swings[5], swings[6]
+    def evaluate(self):
+        # Avem nevoie de cel putin 7 swinguri (6 pentru structura + 1 break point)
+        if len(self.swings) < 7:
+            return 'Date insuficiente (necesare cel puțin 7 swing-uri)'
 
-    # Verificam structura initiala de 6 swing-uri (3UP / 3DOWN alternativ)
-    # (Poti adauga o validare suplimentara aici daca este nevoie)
+        # Extragem valorile main kline pentru primele 6 swinguri
+        mk = [self.get_main_kline(s) for s in self.swings[:6]]
+        s1, s2, s3, s4, s5, s6 = mk[0], mk[1], mk[2], mk[3], mk[4], mk[5]
 
-    # --- CAZUL 1: UPTREND ---
-    # Identificam nivelurile cheie:
-    # Main kline 5(hl) si Main kline 6(hh) si Main kline 7(ll)
+        # Al 7 lea swing este break pointul
+        mk_7 = self.get_main_kline(self.swings[6])
 
-    mk_5 = s5['main_kline']  # hl (Higher Low)
-    mk_6 = s6['main_kline']  # hh (Higher High)
-    mk_7 = s7['main_kline']  # break point
+        # 1. VERIFICARE UPTREND
+        if s1 > s2 < s3 > s4 < s5 > s6:
+            # Structura de 6 swinguri este valia
+            # Acum verificam break pointul (s7 / mk_7) fata de s5 (hl) si s6 (hh)
+            hl = s5
+            hh = s6
 
-    # Verificam daca este vorba despre un uptrend potential
-    # (Spre exemplu, s5 și s6 respecta logica de crestere)
+            if mk_7 < hl:
+                return 'Uptrend TERMINAT (Break pointul a coborat sub HL anterior)'
+            elif hl <= mk_7 <= hh:
+                return 'Uptrend in zona de CONSOLIDARE'
+            else:
+                return 'Uptrend in continuare'
 
-    # Prima posibilitate: main kline 7 < main kline 5(hl)
-    if mk_7 < mk_5:
-        return 'Uptrend TERMINAT (Break pointul a coborat sub HL anterior)'
+        # VERIFICARE DOWNTREND
+        elif s1 < s2 > s3 < s4 > s5 < s6:
+            lh = s5
+            ll = s6
 
-    # A doua posibilitate: main kline 7 este intre main kline 5(hl) si main kline 6(hh)
-    elif mk_5 <= mk_7 <= mk_6:
-        return 'Uptrend IN ZONA DE DECZIE / CONSOLIDARE (Poate continua sau se poate sfarsi)'
+            if mk_7 > lh:
+                return 'Downtrend TERMINAT (Break pointul a urcat peste LH anterior)'
+            elif ll <= mk_7 <= lh:
+                return 'Downtrend CONSOLIDARE'
+            else:
+                return 'Downtrend in continuare'
 
-        # --- CAZUL 2: DOWNTREND ---
-        # Aici logica se inverseaza simetric pentru un downtrend de 6 swing-uri
-        # Cu main kline 5(lh) si main kline 6(ll)
-
-    return 'Trend in desfasurare'
+        return 'Fara trend clar'
